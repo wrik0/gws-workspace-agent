@@ -1,0 +1,32 @@
+[project]
+name = "google-workspace-mcp"
+version = "0.1.0"
+description = "A hardened Google Calendar MCP server with agent safety built in"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "mcp>=1.27.0",
+    "google-api-python-client>=2.197.0",
+    "google-auth>=2.54.0",
+    "google-auth-oauthlib>=1.4.0",
+    "google-auth-httplib2>=0.4.0",
+    "platformdirs>=4.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "ruff>=0.3.0",
+    "mypy>=1.9.0",
+]
+
+[project.scripts]
+gws-auth = "google_workspace_mcp.cli:auth"
+gws-serve = "google_workspace_mcp.cli:serve"
+gws-purge = "google_workspace_mcp.cli:purge"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
