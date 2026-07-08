@@ -1,0 +1,16 @@
+{
+  "color_map": {
+    "1":  { "label": "Lavender",  "type": "personal",  "emoji": "💜" },
+    "2":  { "label": "Sage",      "type": "social",    "emoji": "💚" },
+    "3":  { "label": "Grape",     "type": "creative",  "emoji": "🟣" },
+    "4":  { "label": "Flamingo",  "type": "health",    "emoji": "🩷" },
+    "5":  { "label": "Banana",    "type": "reminder",  "emoji": "🟡" },
+    "6":  { "label": "Tangerine", "type": "admin",     "emoji": "🟠" },
+    "7":  { "label": "Peacock",   "type": "learning",  "emoji": "🔵" },
+    "8":  { "label": "Blueberry", "type": "deep-work", "emoji": "🫐" },
+    "9":  { "label": "Basil",     "type": "focus",     "emoji": "🟢" },
+    "10": { "label": "Tomato",    "type": "urgent",    "emoji": "🔴" },
+    "11": { "label": "Graphite",  "type": "blocked",   "emoji": "⬛" }
+  },
+  "default_create_color_id": "7"
+}

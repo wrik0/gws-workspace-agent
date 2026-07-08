@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, feature/* ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    name: Lint & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          version: "latest"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: Install Dependencies
+        run: |
+          uv pip install --system -e ".[dev]"
+
+      - name: Run Ruff Format Check
+        run: |
+          ruff format --check
+
+      - name: Run Ruff Lint Check
+        run: |
+          ruff check
+
+      - name: Run Tests
+        run: |
+          pytest
