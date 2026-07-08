@@ -58,6 +58,9 @@ Before running the server, place your Google Cloud Client Secrets file (`credent
 Next, run the CLI authorization utility:
 ```bash
 # Performs browser login and caches the OAuth token
+# On Unix (using the symlinked binary):
+gws-auth
+# Or directly via virtual environment:
 .venv/bin/gws-auth
 ```
 
@@ -116,7 +119,7 @@ Add this to your `claude_desktop_config.json`:
 {
   "mcpServers": {
     "google-workspace": {
-      "command": "/absolute/path/to/gws-workspace-agent/.venv/bin/gws-serve",
+      "command": "~/.local/bin/gws-serve",
       "args": ["--readonly", "--pii-mode", "redact"],
       "env": {
         "GWS_ALLOWED_DOMAINS": "mycompany.com"
@@ -130,7 +133,7 @@ Add this to your `claude_desktop_config.json`:
 Navigate to **Cursor Settings** > **Features** > **MCP** > **+ Add New MCP Server**:
 *   **Name**: `google-workspace`
 *   **Type**: `command`
-*   **Command**: `/absolute/path/to/gws-workspace-agent/.venv/bin/gws-serve --readonly --pii-mode redact`
+*   **Command**: `~/.local/bin/gws-serve --readonly --pii-mode redact`
 
 ---
 

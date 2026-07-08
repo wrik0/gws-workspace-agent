@@ -82,6 +82,9 @@ def main():
         venv_auth = venv_dir / "bin" / "gws-auth"
         venv_serve = venv_dir / "bin" / "gws-serve"
 
+    install_serve = venv_serve
+    install_auth = venv_auth
+
     # Install package
     print("Installing dependencies...")
     # Check if uv is available in the user path
@@ -96,6 +99,24 @@ def main():
         print("Installing package in editable mode via pip...")
         subprocess.run([str(venv_pip), "install", "-e", "."], check=True)
     print_success("Package installed successfully.")
+
+    # Link/Install Executables to ~/.local/bin (Unix only)
+    if sys.platform != "win32":
+        local_bin_dir = Path.home() / ".local" / "bin"
+        try:
+            local_bin_dir.mkdir(parents=True, exist_ok=True)
+            for bin_name in ["gws-auth", "gws-serve", "gws-purge"]:
+                venv_bin_path = venv_dir / "bin" / bin_name
+                target_bin_path = local_bin_dir / bin_name
+                if venv_bin_path.exists():
+                    if target_bin_path.exists() or target_bin_path.is_symlink():
+                        target_bin_path.unlink()
+                    target_bin_path.symlink_to(venv_bin_path)
+            print_success(f"Linked command line tools to {local_bin_dir}")
+            install_serve = local_bin_dir / "gws-serve"
+            install_auth = local_bin_dir / "gws-auth"
+        except Exception as e:
+            print_warning(f"Could not symlink command line tools to {local_bin_dir}: {e}")
 
     # -------------------------------------------------------------------------
     # Step 2: Google Workspace Credentials
@@ -152,7 +173,7 @@ def main():
         )
         if run_auth == "y" or run_auth == "yes":
             try:
-                subprocess.run([str(venv_auth)], check=True)
+                subprocess.run([str(install_auth)], check=True)
                 print_success("OAuth authentication completed successfully.")
             except subprocess.CalledProcessError:
                 print_error(
@@ -198,7 +219,7 @@ def main():
 
             # Add google-workspace server entry
             config_data["mcpServers"]["google-workspace"] = {
-                "command": str(venv_serve),
+                "command": str(install_serve),
                 "args": ["--readonly", "--pii-mode", "redact"],
             }
 
@@ -216,7 +237,7 @@ def main():
     print("  2. Add new MCP server:")
     print("     - Name: google-workspace")
     print("     - Type: command")
-    print(f"     - Command: {venv_serve} --readonly --pii-mode redact")
+    print(f"     - Command: {install_serve} --readonly --pii-mode redact")
 
     # --- Antigravity ---
     print("\n--- Antigravity CLI Integration ---")
@@ -224,13 +245,13 @@ def main():
         "To run this server in the Antigravity Terminal Agent environment, add the server to"
     )
     print("your agent configurations:")
-    print(f"  Command: {venv_serve}")
+    print(f"  Command: {install_serve}")
     print("  Arguments: --readonly --pii-mode redact")
 
     # --- OpenAPI / Other Agents ---
     print("\n--- OpenAPI & General Agents Integration ---")
     print("This server is fully standard-compliant over stdio.")
-    print(f"You can launch it as a subprocess using: {venv_serve}")
+    print(f"You can launch it as a subprocess using: {install_serve}")
 
     print_step("Setup Complete!")
     print("You can run your server with Full or Read-Only modes.")
