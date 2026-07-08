@@ -44,6 +44,14 @@ def print_error(msg: str):
     print(f"{RED}✘ {msg}{NC}")
 
 
+def safe_input(prompt: str, default: str = "") -> str:
+    try:
+        return input(prompt)
+    except EOFError:
+        print()
+        return default
+
+
 def main():
     print(BANNER)
     print(f"{BOLD}Welcome to the Google Workspace MCP Server setup tool!{NC}\n")
@@ -115,8 +123,9 @@ def main():
         print("  2. Create a desktop application OAuth Client ID.")
         print("  3. Download the client secrets JSON file.")
 
-        user_input = input(
-            "\nEnter path to downloaded client secret JSON file (leave empty to skip): "
+        user_input = safe_input(
+            "\nEnter path to downloaded client secret JSON file (leave empty to skip): ",
+            default="",
         ).strip()
         if user_input:
             src_file = Path(user_input).expanduser().resolve()
@@ -137,7 +146,7 @@ def main():
     if credentials_path.exists():
         print_step("OAuth Authentication")
         run_auth = (
-            input("Would you like to run the authentication loop now? (y/N): ")
+            safe_input("Would you like to run the authentication loop now? (y/N): ", default="n")
             .strip()
             .lower()
         )
@@ -173,8 +182,8 @@ def main():
             Path.home() / ".config" / "Claude" / "claude_desktop_config.json"
         )
 
-    if claude_config_path.parent.exists() or input(
-        "Configure Claude Desktop server settings anyway? (y/N): "
+    if claude_config_path.parent.exists() or safe_input(
+        "Configure Claude Desktop server settings anyway? (y/N): ", default="n"
     ).strip().lower() in ["y", "yes"]:
         try:
             claude_config_path.parent.mkdir(parents=True, exist_ok=True)

@@ -28,7 +28,13 @@ fi
 
 # Run the python setup script
 if command -v python3 &> /dev/null; then
-    python3 setup.py "$@"
+    # If stdin is not a terminal (e.g. piped from curl), but /dev/tty is available,
+    # redirect stdin to the terminal to allow interactive prompts.
+    if [ ! -t 0 ] && [ -c /dev/tty ]; then
+        python3 setup.py "$@" < /dev/tty
+    else
+        python3 setup.py "$@"
+    fi
 else
     echo -e "${RED}Error: python3 is not installed. Please install Python 3.11+ and try again.${NC}"
     exit 1
