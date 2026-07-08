@@ -54,13 +54,22 @@ def safe_input(prompt: str, default: str = "") -> str:
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description="Google Workspace MCP Server setup tool")
-    parser.add_argument("--profile", default="default", help="Profile name to configure (defaults to 'default')")
+
+    parser = argparse.ArgumentParser(
+        description="Google Workspace MCP Server setup tool"
+    )
+    parser.add_argument(
+        "--profile",
+        default="default",
+        help="Profile name to configure (defaults to 'default')",
+    )
     args, unknown = parser.parse_known_args()
     profile = args.profile
 
     print(BANNER)
-    print(f"{BOLD}Welcome to the Google Workspace MCP Server setup tool! (Profile: '{profile}'){NC}\n")
+    print(
+        f"{BOLD}Welcome to the Google Workspace MCP Server setup tool! (Profile: '{profile}'){NC}\n"
+    )
 
     project_dir = Path(__file__).parent.resolve()
 
@@ -122,7 +131,9 @@ def main():
             install_serve = local_bin_dir / "gws-serve"
             install_auth = local_bin_dir / "gws-auth"
         except Exception as e:
-            print_warning(f"Could not symlink command line tools to {local_bin_dir}: {e}")
+            print_warning(
+                f"Could not symlink command line tools to {local_bin_dir}: {e}"
+            )
 
     # -------------------------------------------------------------------------
     # Step 2: Google Workspace Credentials
@@ -173,7 +184,10 @@ def main():
     if credentials_path.exists():
         print_step("OAuth Authentication")
         run_auth = (
-            safe_input("Would you like to run the authentication loop now? (y/N): ", default="n")
+            safe_input(
+                "Would you like to run the authentication loop now? (y/N): ",
+                default="n",
+            )
             .strip()
             .lower()
         )
@@ -223,8 +237,12 @@ def main():
             if "mcpServers" not in config_data:
                 config_data["mcpServers"] = {}
 
-            server_name = "google-workspace" if profile == "default" else f"google-workspace-{profile}"
-            
+            server_name = (
+                "google-workspace"
+                if profile == "default"
+                else f"google-workspace-{profile}"
+            )
+
             # Add google-workspace server entry
             config_data["mcpServers"][server_name] = {
                 "command": str(install_serve),
@@ -238,7 +256,9 @@ def main():
         except Exception as e:
             print_error(f"Failed to update Claude Desktop configuration: {e}")
 
-    server_name = "google-workspace" if profile == "default" else f"google-workspace-{profile}"
+    server_name = (
+        "google-workspace" if profile == "default" else f"google-workspace-{profile}"
+    )
 
     # --- Cursor ---
     print("\n--- Cursor Integration ---")
@@ -247,7 +267,9 @@ def main():
     print("  2. Add new MCP server:")
     print(f"     - Name: {server_name}")
     print("     - Type: command")
-    print(f"     - Command: {install_serve} --profile {profile} --readonly --pii-mode redact")
+    print(
+        f"     - Command: {install_serve} --profile {profile} --readonly --pii-mode redact"
+    )
 
     # --- Antigravity ---
     print("\n--- Antigravity CLI Integration ---")
@@ -261,7 +283,9 @@ def main():
     # --- OpenAPI / Other Agents ---
     print("\n--- OpenAPI & General Agents Integration ---")
     print("This server is fully standard-compliant over stdio.")
-    print(f"You can launch it as a subprocess using: {install_serve} --profile {profile}")
+    print(
+        f"You can launch it as a subprocess using: {install_serve} --profile {profile}"
+    )
 
     print_step("Setup Complete!")
     print("You can run your server with Full or Read-Only modes.")
