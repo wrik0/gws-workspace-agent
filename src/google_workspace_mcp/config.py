@@ -1,3 +1,8 @@
+# Copyright (c) 2026 Ishanu Chakraborty. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+#
+# WARNING: THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+
 import os
 from pathlib import Path
 from platformdirs import user_config_dir
@@ -10,12 +15,14 @@ GWS_MODE = os.getenv("GWS_MODE", "full").lower()  # "full" or "readonly"
 GWS_TIMEZONE = os.getenv("GWS_TIMEZONE", "UTC")
 GWS_MAX_WINDOW_DAYS = int(os.getenv("GWS_MAX_WINDOW_DAYS", "90"))
 GWS_PROFILE = os.getenv("GWS_PROFILE", "default")
-GWS_PII_MODE = os.getenv("GWS_PII_MODE", "none").lower()  # "none", "redact", "metadata_only"
+GWS_PII_MODE = os.getenv(
+    "GWS_PII_MODE", "none"
+).lower()  # "none", "redact", "metadata_only"
 
 # Parse comma-separated allowed domains
 GWS_ALLOWED_DOMAINS = [
-    d.strip().lower() 
-    for d in os.getenv("GWS_ALLOWED_DOMAINS", "").split(",") 
+    d.strip().lower()
+    for d in os.getenv("GWS_ALLOWED_DOMAINS", "").split(",")
     if d.strip()
 ]
 
@@ -26,12 +33,8 @@ TOKEN_PATH = Path(
 CREDENTIALS_PATH = Path(
     os.getenv("GWS_CREDENTIALS_PATH") or (APP_DIR / "credentials.json")
 )
-COLOR_CONFIG = Path(
-    os.getenv("GWS_COLOR_CONFIG") or (APP_DIR / "colors.json")
-)
-AUDIT_LOG = Path(
-    os.getenv("GWS_AUDIT_LOG") or (APP_DIR / "audit.log")
-)
+COLOR_CONFIG = Path(os.getenv("GWS_COLOR_CONFIG") or (APP_DIR / "colors.json"))
+AUDIT_LOG = Path(os.getenv("GWS_AUDIT_LOG") or (APP_DIR / "audit.log"))
 
 # Google OAuth scopes
 SCOPE_SETS = {
