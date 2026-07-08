@@ -80,3 +80,74 @@ If the token expires or is revoked, you will receive a runtime error:
    ```bash
    gws-auth
    ```
+
+---
+
+## 5. Multi-Profile & Multi-Account Configurations
+
+The server natively supports multi-tenant and multi-account configurations (e.g., separating personal `@gmail.com` and work `@company-name.com` accounts). You can manage them using the `--profile` command-line flag or `GWS_PROFILE` environment variable.
+
+### Option A: Shared Google Cloud Project (Default)
+In this configuration, both profiles share the same client credentials (`credentials.json`) but keep their login tokens separate.
+
+1. **Authorize the Personal Profile**:
+   ```bash
+   gws-auth --profile personal
+   ```
+2. **Authorize the Work Profile**:
+   ```bash
+   gws-auth --profile work
+   ```
+3. **Configure the Client (`claude_desktop_config.json`)**:
+   ```json
+   {
+     "mcpServers": {
+       "google-workspace-personal": {
+         "command": "~/.local/bin/gws-serve",
+         "args": ["--profile", "personal", "--readonly", "--pii-mode", "redact"]
+       },
+       "google-workspace-work": {
+         "command": "~/.local/bin/gws-serve",
+         "args": ["--profile", "work", "--readonly", "--pii-mode", "redact"]
+       }
+     }
+   }
+   ```
+
+### Option B: Isolated Google Cloud Projects (Advanced)
+If you need to keep profiles strictly isolated across different Google Cloud Console projects (e.g., your personal sandbox project and your enterprise GCP tenant project), you can use different client credentials files:
+
+1. **Save Credentials Separately**:
+   Save your client secrets files as:
+   * `~/.config/google-workspace-mcp/credentials_personal.json`
+   * `~/.config/google-workspace-mcp/credentials_work.json`
+
+2. **Authenticate Each Profile**:
+   Set the `GWS_CREDENTIALS_PATH` env variable when authorizing each profile:
+   ```bash
+   GWS_CREDENTIALS_PATH=~/.config/google-workspace-mcp/credentials_personal.json gws-auth --profile personal
+   GWS_CREDENTIALS_PATH=~/.config/google-workspace-mcp/credentials_work.json gws-auth --profile work
+   ```
+
+3. **Configure the Client (`claude_desktop_config.json`)**:
+   Specify the credentials path for each server instance using the `"env"` block:
+   ```json
+   {
+     "mcpServers": {
+       "google-workspace-personal": {
+         "command": "~/.local/bin/gws-serve",
+         "args": ["--profile", "personal", "--readonly", "--pii-mode", "redact"],
+         "env": {
+           "GWS_CREDENTIALS_PATH": "/home/username/.config/google-workspace-mcp/credentials_personal.json"
+         }
+       },
+       "google-workspace-work": {
+         "command": "~/.local/bin/gws-serve",
+         "args": ["--profile", "work", "--readonly", "--pii-mode", "redact"],
+         "env": {
+           "GWS_CREDENTIALS_PATH": "/home/username/.config/google-workspace-mcp/credentials_work.json"
+         }
+       }
+     }
+   }
+   ```
