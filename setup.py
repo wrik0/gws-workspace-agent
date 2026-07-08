@@ -53,8 +53,14 @@ def safe_input(prompt: str, default: str = "") -> str:
 
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="Google Workspace MCP Server setup tool")
+    parser.add_argument("--profile", default="default", help="Profile name to configure (defaults to 'default')")
+    args, unknown = parser.parse_known_args()
+    profile = args.profile
+
     print(BANNER)
-    print(f"{BOLD}Welcome to the Google Workspace MCP Server setup tool!{NC}\n")
+    print(f"{BOLD}Welcome to the Google Workspace MCP Server setup tool! (Profile: '{profile}'){NC}\n")
 
     project_dir = Path(__file__).parent.resolve()
 
@@ -173,11 +179,11 @@ def main():
         )
         if run_auth == "y" or run_auth == "yes":
             try:
-                subprocess.run([str(install_auth)], check=True)
+                subprocess.run([str(install_auth), "--profile", profile], check=True)
                 print_success("OAuth authentication completed successfully.")
             except subprocess.CalledProcessError:
                 print_error(
-                    "OAuth authentication failed. You can run it later using 'gws-auth'."
+                    f"OAuth authentication failed. You can run it later using 'gws-auth --profile {profile}'."
                 )
     else:
         print_warning(
@@ -217,10 +223,12 @@ def main():
             if "mcpServers" not in config_data:
                 config_data["mcpServers"] = {}
 
+            server_name = "google-workspace" if profile == "default" else f"google-workspace-{profile}"
+            
             # Add google-workspace server entry
-            config_data["mcpServers"]["google-workspace"] = {
+            config_data["mcpServers"][server_name] = {
                 "command": str(install_serve),
-                "args": ["--readonly", "--pii-mode", "redact"],
+                "args": ["--profile", profile, "--readonly", "--pii-mode", "redact"],
             }
 
             with open(claude_config_path, "w", encoding="utf-8") as f:
@@ -230,14 +238,16 @@ def main():
         except Exception as e:
             print_error(f"Failed to update Claude Desktop configuration: {e}")
 
+    server_name = "google-workspace" if profile == "default" else f"google-workspace-{profile}"
+
     # --- Cursor ---
     print("\n--- Cursor Integration ---")
     print("To configure the server in Cursor IDE:")
     print("  1. Open Cursor -> Settings -> Features -> MCP.")
     print("  2. Add new MCP server:")
-    print("     - Name: google-workspace")
+    print(f"     - Name: {server_name}")
     print("     - Type: command")
-    print(f"     - Command: {install_serve} --readonly --pii-mode redact")
+    print(f"     - Command: {install_serve} --profile {profile} --readonly --pii-mode redact")
 
     # --- Antigravity ---
     print("\n--- Antigravity CLI Integration ---")
@@ -246,12 +256,12 @@ def main():
     )
     print("your agent configurations:")
     print(f"  Command: {install_serve}")
-    print("  Arguments: --readonly --pii-mode redact")
+    print(f"  Arguments: --profile {profile} --readonly --pii-mode redact")
 
     # --- OpenAPI / Other Agents ---
     print("\n--- OpenAPI & General Agents Integration ---")
     print("This server is fully standard-compliant over stdio.")
-    print(f"You can launch it as a subprocess using: {install_serve}")
+    print(f"You can launch it as a subprocess using: {install_serve} --profile {profile}")
 
     print_step("Setup Complete!")
     print("You can run your server with Full or Read-Only modes.")

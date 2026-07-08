@@ -37,6 +37,11 @@ Alternatively, if you already cloned the repository locally:
 ./setup.sh
 ```
 
+You can also configure a custom profile (e.g., `work`) during setup:
+```bash
+./setup.sh --profile work
+```
+
 ### 2. Manual Installation
 If you prefer to configure the environment manually:
 ```bash
